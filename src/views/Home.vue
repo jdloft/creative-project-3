@@ -6,13 +6,17 @@
     </p>
     <form v-on:submit.prevent="addItem">
       <input type="text" :value="message" @input="updateMessage" />
+      <select :value="priority" @input="updatePriority" selected="2">
+        <option value="1">High</option>
+        <option value="2">Medium</option>
+        <option value="3">Low</option>
+      </select>
       <button type="submit">Add</button>
     </form>
     <div class="controls">
       <button v-on:click="showAll()">Show All</button>
       <button v-on:click="showActive()">Show Active</button>
       <button v-on:click="showCompleted()">Show Completed</button>
-      <button v-on:click="deleteCompleted()">Delete Completed</button>
     </div>
     <ul>
       <li
@@ -27,7 +31,7 @@
         <label v-bind:class="{ completed: item.completed }">{{
           item.text
         }}</label>
-        <button v-on:click="deleteItem(item)" class="delete">Delete</button>
+        <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
       </li>
     </ul>
   </div>
@@ -56,15 +60,6 @@ li {
   font-size: 1em;
   display: flex;
   align-items: center;
-}
-
-.delete {
-  display: none;
-  margin-left: auto;
-}
-
-li:hover .delete {
-  display: block;
 }
 
 label {
@@ -121,18 +116,15 @@ export default {
       return this.$store.state.todos;
     },
     message() {
-      return this.$store.message;
+      return this.$store.state.message;
+    },
+    priority() {
+      return this.$store.state.priority;
     }
   },
   methods: {
     addItem() {
       this.$store.commit("addItem");
-    },
-    deleteItem(item) {
-      this.$store.commit("deleteItem", item);
-    },
-    deleteCompleted() {
-      this.$store.commit("deleteCompleted");
     },
     dragItem(item) {
       this.$store.commit("dragItem", item);
@@ -151,6 +143,20 @@ export default {
     },
     updateMessage(e) {
       this.$store.commit("setMessage", e.target.value);
+    },
+    updatePriority(e) {
+      console.log("Priority set to " + e.target.value);
+      this.$store.commit("setPriority", e.target.value);
+    },
+    getPriorityLabel(priority) {
+      switch (priority) {
+        case 1:
+          return "High";
+        case 2:
+          return "Medium";
+        case 3:
+          return "Low";
+      }
     }
   }
 };

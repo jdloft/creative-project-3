@@ -13,17 +13,21 @@ const store = new Vuex.Store({
       {
         text: "make an app",
         completed: false,
+        priority: 1,
       },
       {
         text: "declare victory",
         completed: false,
+        priority: 2,
       },
       {
         text: "profit",
         completed: false,
+        priority: 3,
       },
     ],
     message: "",
+    priority: 2,
     show: "all",
     drag: {},
   },
@@ -32,26 +36,20 @@ const store = new Vuex.Store({
       state.todos.push({ text: state.message, completed: false });
       state.message = "";
     },
-    deleteItem(state, item) {
-      var index = state.todos.indexOf(item);
-      if (index > -1) state.todos.splice(index, 1);
-    },
     setShow(state, show) {
       state.show = show;
     },
     setMessage(state, message) {
       state.message = message;
     },
-    deleteCompleted(state) {
-      state.todos = state.todos.filter((item) => {
-        return !item.completed;
-      });
+    setPriority(state, priority) {
+      state.priority = priority;
     },
     dragItem(state, item) {
       state.drag = item;
     },
     dropItem(state, item) {
-      const indexItem = state.todos.indexOf(this.$root.drag);
+      const indexItem = state.todos.indexOf(state.drag);
       const indexTarget = state.todos.indexOf(item);
       state.todos.splice(indexItem, 1);
       state.todos.splice(indexTarget, 0, state.drag);
