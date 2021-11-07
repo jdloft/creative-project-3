@@ -2,13 +2,14 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">List</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/priority">Prioritized</router-link>
     </div>
     <router-view/>
   </div>
 </template>
 
 <style>
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

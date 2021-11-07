@@ -6,52 +6,9 @@
           class="p-1 h1 text-primary text-center mx-auto display-inline-block"
         >
           <i class="fa fa-check bg-primary text-white rounded p-2"></i>
-          To-do List
+          To-do List (Prioritized)
         </div>
       </div>
-    </div>
-    <div class="row m-1 p-3">
-      <form v-on:submit.prevent="addItem">
-      <div class="col col-11 mx-auto">
-        <div
-          class="
-            row
-            bg-white
-            rounded
-            shadow-sm
-            p-2
-            add-todo-wrapper
-            align-items-center
-            justify-content-center
-          "
-        >
-          <div class="col">
-            <input
-              class="
-                form-control form-control-lg
-                border-0
-                add-todo-input
-                bg-transparent
-                rounded
-              "
-              type="text"
-              placeholder="New todo..."
-              :value="message" @input="updateMessage"
-            />
-          </div>
-          <div class="col">
-            <select :value="priority" @input="updatePriority" selected="2">
-              <option value="1">High</option>
-              <option value="2">Medium</option>
-              <option value="3">Low</option>
-            </select>
-          </div>
-          <div class="col-auto px-0 mx-0 mr-2">
-            <button type="submit" class="btn btn-primary">Add</button>
-          </div>
-        </div>
-      </div>
-      </form>
     </div>
       <p v-show="activeTodos.length === 0">
         You are done with all your tasks! Good job!
@@ -63,12 +20,9 @@
       </div>
       <ul>
         <li
-          v-for="item in filteredTodos"
+          v-for="item in prioritizedTodos"
           :key="item.text"
           draggable="true"
-          v-on:dragstart="dragItem(item)"
-          v-on:dragover.prevent
-          v-on:drop="dropItem(item)"
         >
           <input type="checkbox" v-model="item.completed" />
           <label v-bind:class="{ completed: item.completed }">{{
@@ -148,20 +102,16 @@ export default {
   name: "Home",
   computed: {
     activeTodos() {
-      return this.$store.state.todos.filter((item) => {
-        return !item.completed;
-      });
+        return this.$store.state.todos.filter((item) => {
+            return !item.completed;
+        });
     },
-    filteredTodos() {
-      if (this.$store.state.show === "active")
+    prioritizedTodos() {
         return this.$store.state.todos.filter((item) => {
-          return !item.completed;
+            return !item.completed;
+        }).sort(function(a, b) {
+            return a.priority - b.priority;
         });
-      if (this.$store.state.show === "completed")
-        return this.$store.state.todos.filter((item) => {
-          return item.completed;
-        });
-      return this.$store.state.todos;
     },
     message() {
       return this.$store.state.message;
@@ -171,17 +121,6 @@ export default {
     },
   },
   methods: {
-    addItem() {
-      var today = new Date();
-      var currentDate = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
-      this.$store.commit("addItem", currentDate);
-    },
-    dragItem(item) {
-      this.$store.commit("dragItem", item);
-    },
-    dropItem(item) {
-      this.$store.commit("dropItem", item);
-    },
     showAll() {
       this.$store.commit("setShow", "all");
     },
@@ -193,10 +132,6 @@ export default {
     },
     updateMessage(e) {
       this.$store.commit("setMessage", e.target.value);
-    },
-    updatePriority(e) {
-      console.log("Priority set to " + e.target.value);
-      this.$store.commit("setPriority", e.target.value);
     },
     getPriorityLabel(priority) {
       switch (priority) {

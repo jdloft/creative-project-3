@@ -4,6 +4,14 @@ import Vuex from 'vuex'
 import App from './App.vue'
 import router from './router'
 
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
+
 Vue.config.productionTip = false
 Vue.use(Vuex)
 
@@ -32,9 +40,10 @@ const store = new Vuex.Store({
     drag: {},
   },
   mutations: {
-    addItem(state) {
-      state.todos.push({ text: state.message, completed: false });
+    addItem(state, date) {
+      state.todos.push({ text: state.message, completed: false, priority: state.priority, date: date });
       state.message = "";
+      state.priority = 2;
     },
     setShow(state, show) {
       state.show = show;
