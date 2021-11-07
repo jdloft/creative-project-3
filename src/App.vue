@@ -5,6 +5,7 @@
       <router-link to="/priority">Prioritized</router-link>
     </div>
     <router-view/>
+    <p><a href="https://github.com/jdloft/creative-project-3">Repo</a></p>
   </div>
 </template>
 
