@@ -54,7 +54,7 @@
       </form>
     </div>
       <p v-show="activeTodos.length === 0">
-        You are done with all your tasks! Good job!
+        All tasks completed. Make a new one!
       </p>
       <div class="controls">
         <button v-on:click="showAll()" class="btn btn-primary">Show All</button>
