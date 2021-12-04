@@ -36,11 +36,11 @@
               "
               type="text"
               placeholder="New todo..."
-              :value="message" @input="updateMessage"
+              v-model="message"
             />
           </div>
           <div class="col">
-            <select :value="priority" @input="updatePriority" selected="2">
+            <select v-model="priority" selected="2">
               <option value="1">High</option>
               <option value="2">Medium</option>
               <option value="3">Low</option>
@@ -72,7 +72,7 @@
         >
           <input type="checkbox" v-model="item.completed" />
           <label v-bind:class="{ completed: item.completed }">{{
-            item.text
+            item.message
           }}</label>
           <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
         </li>
@@ -107,6 +107,7 @@ li {
 }
 
 label {
+  text-align: left;
   width: 400px;
 }
 
@@ -144,37 +145,69 @@ button {
 <script>
 // @ is an alias to /src
 
+import axios from 'axios';
 export default {
   name: "Home",
+  data: function() {
+    return {
+      message: "",
+      priority: 2,
+      todos: [],
+    };
+  },
   computed: {
     activeTodos() {
-      return this.$store.state.todos.filter((item) => {
+      return this.todos.filter((item) => {
         return !item.completed;
       });
     },
     filteredTodos() {
       if (this.$store.state.show === "active")
-        return this.$store.state.todos.filter((item) => {
+        return this.todos.filter((item) => {
           return !item.completed;
         });
       if (this.$store.state.show === "completed")
-        return this.$store.state.todos.filter((item) => {
+        return this.todos.filter((item) => {
           return item.completed;
         });
-      return this.$store.state.todos;
-    },
-    message() {
-      return this.$store.state.message;
-    },
-    priority() {
-      return this.$store.state.priority;
+      return this.todos;
     },
   },
+  created() {
+    this.getItems();
+  },
   methods: {
-    addItem() {
+    async getItems() {
+      console.log("Getting items");
+      try {
+        let response = await axios.get("/api/items");
+        console.log(response.data);
+        this.todos = response.data;
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async addItem() {
+      console.log("Adding item " + this.message);
       var today = new Date();
       var currentDate = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
       this.$store.commit("addItem", currentDate);
+      this.todos.push({
+        message: this.message,
+        priority: this.priority,
+        completed: false,
+      });
+      try {
+        await axios.post("/api/items", {
+          message: this.message,
+          priority: this.priority,
+          completed: false,
+          date: currentDate,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     dragItem(item) {
       this.$store.commit("dragItem", item);
@@ -190,13 +223,6 @@ export default {
     },
     showCompleted() {
       this.$store.commit("setShow", "completed");
-    },
-    updateMessage(e) {
-      this.$store.commit("setMessage", e.target.value);
-    },
-    updatePriority(e) {
-      console.log("Priority set to " + e.target.value);
-      this.$store.commit("setPriority", e.target.value);
     },
     getPriorityLabel(priority) {
       switch (priority) {
