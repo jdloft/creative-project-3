@@ -170,6 +170,10 @@ export default {
         let response = await axios.get("/api/classes");
         console.log(response.data);
         this.classes = response.data;
+        this.classes.push({
+          name: "Unassigned",
+          description: "Catch-all",
+        });
         return true;
       } catch (error) {
         console.log(error);

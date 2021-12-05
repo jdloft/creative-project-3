@@ -6,7 +6,7 @@
           class="p-1 h1 text-primary text-center mx-auto display-inline-block"
         >
           <i class="fa fa-check bg-primary text-white rounded p-2"></i>
-          To-do List
+          To-do List for {{ $route.params.class }}
         </div>
       </div>
     </div>
@@ -46,13 +46,6 @@
               <option value="3">Low</option>
             </select>
           </div>
-          <div class="col">
-            <select v-model="selectedClass">
-              <option v-for="item in classes" v-bind:key="item.name">
-                {{ item.name }}
-              </option>
-            </select>
-          </div>
           <div class="col-auto px-0 mx-0 mr-2">
             <button type="submit" class="btn btn-primary">Add</button>
           </div>
@@ -60,30 +53,31 @@
       </div>
       </form>
     </div>
-    <p v-show="activeTodos.length === 0">
-      All tasks completed. Make a new one!
-    </p>
-    <div class="controls">
-      <button v-on:click="showAll()" class="btn btn-primary">Show All</button>
-      <button v-on:click="showActive()" class="btn btn-primary">Show Active</button>
-      <button v-on:click="showCompleted()" class="btn btn-primary">Show Completed</button>
+      <p v-show="activeTodos.length === 0">
+        All tasks completed. Make a new one!
+      </p>
+      <div class="controls">
+        <button v-on:click="showAll()" class="btn btn-primary">Show All</button>
+        <button v-on:click="showActive()" class="btn btn-primary">Show Active</button>
+        <button v-on:click="showCompleted()" class="btn btn-primary">Show Completed</button>
+      </div>
+      <ul>
+        <li
+          v-for="item in filteredTodos"
+          :key="item.text"
+          draggable="true"
+          v-on:dragstart="dragItem(item)"
+          v-on:dragover.prevent
+          v-on:drop="dropItem(item)"
+        >
+          <input type="checkbox" v-model="item.completed" />
+          <label v-bind:class="{ completed: item.completed }">{{
+            item.message
+          }}</label>
+          <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
+        </li>
+      </ul>
     </div>
-    <ul>
-      <li
-        v-for="item in filteredTodos"
-        :key="item.text"
-        draggable="true"
-        v-on:dragstart="dragItem(item)"
-        v-on:dragover.prevent
-        v-on:drop="dropItem(item)"
-      >
-        <input type="checkbox" v-model="item.completed" />
-        <label v-bind:class="{ completed: item.completed }">{{ item.message }}</label>
-        <label>{{ item.class }}</label>
-        <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
-      </li>
-    </ul>
-  </div>
 </template>
 
 <style scoped>
@@ -159,8 +153,6 @@ export default {
       message: "",
       priority: 2,
       todos: [],
-      selectedClass: "",
-      classes: [],
     };
   },
   computed: {
@@ -182,16 +174,22 @@ export default {
     },
   },
   created() {
+    this.setClassName();
     this.getItems();
-    this.getClasses();
   },
   methods: {
+    setClassName() {
+      this.className = this.$route.params.class;
+    },
     async getItems() {
       console.log("Getting items");
       try {
         let response = await axios.get("/api/items");
         console.log(response.data);
-        this.todos = response.data;
+        this.todos = response.data.filter((item) => {
+          if (this.className === "Unassigned") return !('class' in item);
+          return item.class === this.className;
+        });
         return true;
       } catch (error) {
         console.log(error);
@@ -206,7 +204,6 @@ export default {
         message: this.message,
         priority: this.priority,
         completed: false,
-        class: this.selectedClass,
       });
       try {
         await axios.post("/api/items", {
@@ -214,19 +211,7 @@ export default {
           priority: this.priority,
           completed: false,
           date: currentDate,
-          class: this.selectedClass,
         });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getClasses() {
-      console.log("Getting classes");
-      try {
-        let response = await axios.get("/api/classes");
-        console.log(response.data);
-        this.classes = response.data;
-        return true;
       } catch (error) {
         console.log(error);
       }
