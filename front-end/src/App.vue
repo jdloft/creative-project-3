@@ -2,7 +2,7 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">List</router-link> |
-      <router-link to="/priority">Prioritized</router-link>
+      <router-link to="/class">Classes</router-link>
     </div>
     <router-view/>
     <p><a href="https://github.com/jdloft/creative-project-3">Repo</a></p>

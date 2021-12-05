@@ -53,31 +53,31 @@
       </div>
       </form>
     </div>
-      <p v-show="activeTodos.length === 0">
-        All tasks completed. Make a new one!
-      </p>
-      <div class="controls">
-        <button v-on:click="showAll()" class="btn btn-primary">Show All</button>
-        <button v-on:click="showActive()" class="btn btn-primary">Show Active</button>
-        <button v-on:click="showCompleted()" class="btn btn-primary">Show Completed</button>
-      </div>
-      <ul>
-        <li
-          v-for="item in filteredTodos"
-          :key="item.text"
-          draggable="true"
-          v-on:dragstart="dragItem(item)"
-          v-on:dragover.prevent
-          v-on:drop="dropItem(item)"
-        >
-          <input type="checkbox" v-model="item.completed" />
-          <label v-bind:class="{ completed: item.completed }">{{
-            item.message
-          }}</label>
-          <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
-        </li>
-      </ul>
+    <p v-show="activeTodos.length === 0">
+      All tasks completed. Make a new one!
+    </p>
+    <div class="controls">
+      <button v-on:click="showAll()" class="btn btn-primary">Show All</button>
+      <button v-on:click="showActive()" class="btn btn-primary">Show Active</button>
+      <button v-on:click="showCompleted()" class="btn btn-primary">Show Completed</button>
     </div>
+    <ul>
+      <li
+        v-for="item in filteredTodos"
+        :key="item.text"
+        draggable="true"
+        v-on:dragstart="dragItem(item)"
+        v-on:dragover.prevent
+        v-on:drop="dropItem(item)"
+      >
+        <input type="checkbox" v-model="item.completed" />
+        <label v-bind:class="{ completed: item.completed }">{{
+          item.message
+        }}</label>
+        <div class="priority">{{ getPriorityLabel(item.priority) }}</div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>

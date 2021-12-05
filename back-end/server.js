@@ -23,7 +23,7 @@ const itemSchema = new mongoose.Schema({
 
 const classSchema = new mongoose.Schema({
   name: String,
-  date: String,
+  description: String,
 });
 
 // Create a model for items in the museum.
@@ -49,7 +49,7 @@ app.post('/api/items', async (req, res) => {
 app.post('/api/classes', async (req, res) => {
   const classItem = new Class({
     name: req.body.name,
-    date: req.body.date,
+    description: req.body.description,
   });
   try {
     await classItem.save();
